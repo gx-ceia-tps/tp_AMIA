@@ -82,6 +82,7 @@ class QDA(BaseBayesianClassifier):
 
     def _fit_params(self, X, y):
         # estimate each covariance matrix
+        # columnas son las muestras, filas te da la feature
         self.inv_covs = [inv(np.cov(X[:, y.flatten() == idx], bias=True))
                          for idx in range(len(self.log_a_priori))]
         # Q5: por que hace falta el flatten y no se puede directamente X[:,y==idx]?

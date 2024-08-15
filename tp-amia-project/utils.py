@@ -112,8 +112,7 @@ class TensorizedQDA(QDA):
     def _predict_log_conditionals(self, x):
         unbiased_x = x - self.tensor_means
         inner_prod = unbiased_x.transpose(0, 2, 1) @ self.tensor_inv_cov @ unbiased_x
-#    -0.5 -> bug en codigo provisto por consigna
-        return -0.5 * np.log(det(self.tensor_inv_cov)) - 0.5 * inner_prod.flatten()
+        return 0.5 * np.log(det(self.tensor_inv_cov)) - 0.5 * inner_prod.flatten()
 
     def _predict_one(self, x):
         # return the class that has maximum a posteriori probability

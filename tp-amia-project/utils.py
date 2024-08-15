@@ -112,12 +112,29 @@ class TensorizedQDA(QDA):
     def _predict_log_conditionals(self, x):
         unbiased_x = x - self.tensor_means
         inner_prod = unbiased_x.transpose(0, 2, 1) @ self.tensor_inv_cov @ unbiased_x
-
-        return 0.5 * np.log(det(self.tensor_inv_cov)) - 0.5 * inner_prod.flatten()
+#    -0.5 -> bug en codigo provisto por consigna
+        return -0.5 * np.log(det(self.tensor_inv_cov)) - 0.5 * inner_prod.flatten()
 
     def _predict_one(self, x):
         # return the class that has maximum a posteriori probability
         return np.argmax(self.log_a_priori + self._predict_log_conditionals(x))
+
+    def _predict_one_custom(self, x):
+        # return the class that has maximum a posteriori probability
+        print(self._predict_log_conditionals(x))
+        return np.argmax(self.log_a_priori + self._predict_log_conditionals(x))
+
+    def _predict_custom(self, X):
+        # this is actually an individual prediction encased in a for-loop
+        m_obs = X.shape[1]
+        y_hat = np.empty(m_obs, dtype=self.encoder.fmt)
+
+        for i in range(m_obs):
+            encoded_y_hat_i = self._predict_one_custom(X[:, i].reshape(-1, 1))
+            y_hat[i] = self.encoder.names[encoded_y_hat_i]
+
+        # return prediction as a row vector (matching y)
+        return y_hat.reshape(1, -1)
 
 
 # hiperparámetros
